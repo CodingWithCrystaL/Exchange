@@ -50,7 +50,7 @@ client.once('ready', () => {
   setInterval(() => {
     client.user.setActivity(statuses[i], { type: 'WATCHING' });
     i = (i + 1) % statuses.length;
-  }, 2000);
+  }, 4000);
 });
 
 registerCommands(); // Call it on boot

@@ -7,7 +7,7 @@ module.exports = {
 
   async execute(interaction) {
     const embed = new EmbedBuilder()
-      .setTitle('<:emoji_24:1370474663821447361> **GRANDX EXCHANGE PANEL** <:emoji_24:1370474663821447361>')
+      .setTitle('🛒 **GRANDX EXCHANGE PANEL** 🛒')
       .setColor('#e600f8')
       .setDescription(
         `**__INR TO CRYPTO__**\n` +

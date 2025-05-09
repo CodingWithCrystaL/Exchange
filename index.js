@@ -1,14 +1,30 @@
-const { Client, GatewayIntentBits, Partials, Collection, ChannelType, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, REST, Routes } = require('discord.js');
+const { 
+  Client,
+  GatewayIntentBits,
+  Partials,
+  Collection,
+  ChannelType,
+  PermissionsBitField,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  REST,
+  Routes
+} = require('discord.js');
 const fs = require('fs');
 const express = require('express');
 require('dotenv').config();
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers
+  ],
   partials: [Partials.Channel]
 });
 
-// Load slash commands from /commands
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 for (const file of commandFiles) {
@@ -16,25 +32,23 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-// Auto register slash commands globally (using your CLIENT ID)
+// Slash command registration
 const registerCommands = async () => {
   const commands = client.commands.map(cmd => cmd.data.toJSON());
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 
   try {
-    await rest.put(Routes.applicationCommands('1370527419202801746'), {
-      body: commands
-    });
+    await rest.put(Routes.applicationCommands('1370527419202801746'), { body: commands });
     console.log('✅ Slash commands registered globally!');
   } catch (err) {
-    console.error('❌ Error registering commands:', err);
+    console.error('❌ Slash command registration failed:', err);
   }
 };
 
-// Bot ready
 client.once('ready', () => {
   console.log(`✅ Bot is online as ${client.user.tag}`);
 
+  // Rotating bot status every 4 seconds
   const statuses = [
     '💸 Buying USDT at ₹92/$',
     '📤 Sending Crypto Fast',
@@ -53,9 +67,9 @@ client.once('ready', () => {
   }, 4000);
 });
 
-registerCommands(); // Call it on boot
+registerCommands();
 
-// Keep-alive
+// Keep-alive server
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive!'));
 app.listen(3000, () => console.log('✅ Keep-alive server running on port 3000'));
@@ -76,6 +90,14 @@ client.on('interactionCreate', async interaction => {
   }
 
   if (interaction.isButton()) {
+    const member = await interaction.guild.members.fetch(interaction.user.id);
+    const isStaff = member.roles.cache.has(process.env.STAFF_ROLE_ID);
+    const user = interaction.user;
+
+    if (!isStaff) {
+      return interaction.reply({ content: '❌ You do not have permission to close or deliver this ticket.', ephemeral: true });
+    }
+
     const messages = await interaction.channel.messages.fetch({ limit: 100 });
     const log = messages.map(msg => `[${msg.author.tag}]: ${msg.content}`).reverse().join('\n');
     const buffer = Buffer.from(log, 'utf-8');
@@ -85,8 +107,27 @@ client.on('interactionCreate', async interaction => {
     const logChannelId = isDelivered ? '1370081787501613066' : '1357307691487334542';
     const logChannel = await interaction.guild.channels.fetch(logChannelId);
 
-    await logChannel.send({ content: `Transcript for ${interaction.channel.name}`, files: [file] });
-    await interaction.reply({ content: `Ticket has been closed and transcript saved.`, ephemeral: true });
+    // Send transcript
+    await logChannel.send({ content: `📄 Transcript for ${interaction.channel.name}`, files: [file] });
+
+    // Assign Verified Buyer role if delivered
+    if (isDelivered) {
+      const openerId = interaction.channel.name.split('-').pop();
+      const memberToUpdate = await interaction.guild.members.fetch(openerId).catch(() => null);
+      if (memberToUpdate) {
+        await memberToUpdate.roles.add('1357307449366937700');
+      }
+    }
+
+    // Send thank-you DM
+    try {
+      await user.send('✅ **Thank you for using GrandX Exchange!**\nIf you have any feedback or need support, feel free to open a new ticket.');
+    } catch (e) {
+      console.log(`❌ Could not DM ${user.tag}`);
+    }
+
+    // Close the ticket
+    await interaction.reply({ content: '✅ Ticket closed. Transcript saved.', ephemeral: true });
     await interaction.channel.delete();
   }
 });

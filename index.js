@@ -1,4 +1,4 @@
-const { 
+const {
   Client,
   GatewayIntentBits,
   Partials,
@@ -32,7 +32,7 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-// Slash command registration
+// Auto-register slash commands
 const registerCommands = async () => {
   const commands = client.commands.map(cmd => cmd.data.toJSON());
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -48,7 +48,6 @@ const registerCommands = async () => {
 client.once('ready', () => {
   console.log(`✅ Bot is online as ${client.user.tag}`);
 
-  // Rotating bot status every 4 seconds
   const statuses = [
     '💸 Buying USDT at ₹92/$',
     '📤 Sending Crypto Fast',
@@ -62,19 +61,22 @@ client.once('ready', () => {
 
   let i = 0;
   setInterval(() => {
-    client.user.setActivity(statuses[i], { type: 'WATCHING' });
+    client.user.setPresence({
+      activities: [{ name: statuses[i], type: 3 }],
+      status: 'online'
+    });
     i = (i + 1) % statuses.length;
   }, 4000);
 });
 
 registerCommands();
 
-// Keep-alive server
+// Keep-alive server for Render
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive!'));
 app.listen(3000, () => console.log('✅ Keep-alive server running on port 3000'));
 
-// Handle Interactions
+// Handle all interactions
 client.on('interactionCreate', async interaction => {
   if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);
@@ -107,26 +109,22 @@ client.on('interactionCreate', async interaction => {
     const logChannelId = isDelivered ? '1370081787501613066' : '1357307691487334542';
     const logChannel = await interaction.guild.channels.fetch(logChannelId);
 
-    // Send transcript
     await logChannel.send({ content: `📄 Transcript for ${interaction.channel.name}`, files: [file] });
 
-    // Assign Verified Buyer role if delivered
     if (isDelivered) {
       const openerId = interaction.channel.name.split('-').pop();
       const memberToUpdate = await interaction.guild.members.fetch(openerId).catch(() => null);
       if (memberToUpdate) {
-        await memberToUpdate.roles.add('1357307449366937700');
+        await memberToUpdate.roles.add('1357307449366937700'); // Verified Buyer role
       }
     }
 
-    // Send thank-you DM
     try {
-      await user.send('✅ **Thank you for using GrandX Exchange!**\nIf you have any feedback or need support, feel free to open a new ticket.');
+      await user.send('✅ **Thank you for using GrandX Exchange!**\nIf you have any feedback or need help, feel free to open a support ticket.');
     } catch (e) {
       console.log(`❌ Could not DM ${user.tag}`);
     }
 
-    // Close the ticket
     await interaction.reply({ content: '✅ Ticket closed. Transcript saved.', ephemeral: true });
     await interaction.channel.delete();
   }

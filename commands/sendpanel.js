@@ -7,9 +7,17 @@ module.exports = {
 
   async execute(interaction) {
     const embed = new EmbedBuilder()
-      .setTitle('<:emoji_24:1370474663821447361> GRANDX EXCHANGE PANEL <:emoji_24:1370474663821447361>')
+      .setTitle('<:emoji_24:1370474663821447361> **GRANDX EXCHANGE PANEL** <:emoji_24:1370474663821447361>')
       .setColor('#e600f8')
-      .setDescription(`**INR TO CRYPTO**\n<:emoji_23:1370473294448558210>  ₹92 per $ (Any Amount)\n\n**CRYPTO TO INR**\n<:emoji_25:1370476212656537822> Below $50  = ₹86.5/$\n<:emoji_25:1370476212656537822> $50–$150  = ₹87/$\n<:emoji_25:1370476212656537822> Above $150 = ₹87.5/$`);
+      .setDescription(
+        `**__INR TO CRYPTO__**\n` +
+        `> <:emoji_23:1370473294448558210> **₹92 per $ (Any Amount)**\n\n` +
+        `**__CRYPTO TO INR__**\n` +
+        `> <:emoji_25:1370476212656537822> **Below $50** = ₹86.5/$\n` +
+        `> <:emoji_25:1370476212656537822> **$50–$150** = ₹87/$\n` +
+        `> <:emoji_25:1370476212656537822> **Above $150** = ₹87.5/$`
+      )
+      .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
 
     const row = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()

@@ -1,13 +1,9 @@
-// index.js
 const {
   Client,
   GatewayIntentBits,
   Partials,
   Collection,
-  ChannelType,
-  PermissionsBitField,
   EmbedBuilder,
-  ActionRowBuilder,
   REST,
   Routes
 } = require('discord.js');
@@ -16,11 +12,7 @@ const express = require('express');
 require('dotenv').config();
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMembers
-  ],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMembers],
   partials: [Partials.Channel]
 });
 
@@ -51,9 +43,8 @@ client.once('ready', () => {
     '📤 Sending Crypto Fast',
     '📥 Receiving INR Securely',
     '🔁 Real-Time Exchange',
+    '💳 Instant UPI Payments',
     '🪙 BTC, ETH, LTC, USDT Live!',
-    '💳 Exchange 24x7 on GrandX',
-    '⚡ Instant UPI Payments',
     '🎟️ Creating Exchange Tickets'
   ];
 
@@ -80,7 +71,11 @@ client.on('interactionCreate', async interaction => {
   }
 
   if (interaction.isStringSelectMenu()) {
-    require('./handlers/dropdownHandler')(interaction, client);
+    if (interaction.customId === 'select_type') {
+      require('./handlers/dropdownHandler')(interaction, client);
+    } else if (interaction.customId === 'select_type_method') {
+      require('./handlers/selectMethodHandler')(interaction, client);
+    }
   }
 
   if (interaction.isModalSubmit()) {
@@ -88,12 +83,13 @@ client.on('interactionCreate', async interaction => {
   }
 
   if (interaction.isButton()) {
+    const isDelivered = interaction.customId === 'mark_delivered';
+    const isClose = interaction.customId === 'close_ticket';
+
     const member = await interaction.guild.members.fetch(interaction.user.id);
     const isStaff = member.roles.cache.has(process.env.STAFF_ROLE_ID);
-    const user = interaction.user;
-
     if (!isStaff) {
-      return interaction.reply({ content: '❌ You do not have permission to close or deliver this ticket.', ephemeral: true });
+      return interaction.reply({ content: '❌ You do not have permission.', ephemeral: true });
     }
 
     const messages = await interaction.channel.messages.fetch({ limit: 100 });
@@ -101,21 +97,19 @@ client.on('interactionCreate', async interaction => {
     const buffer = Buffer.from(log, 'utf-8');
     const file = { attachment: buffer, name: `transcript-${interaction.channel.name}.txt` };
 
-    const isDelivered = interaction.customId === 'mark_delivered';
-    const logChannelId = isDelivered ? '1370081787501613066' : '1357307691487334542';
-    const logChannel = await interaction.guild.channels.fetch(logChannelId);
+    const openerId = interaction.channel.name.split('-').pop();
+    const selection = client.tempSelections?.[openerId];
+    const deliveryLog = isDelivered ? '1370081787501613066' : '1357307691487334542';
+    const logChannel = await interaction.guild.channels.fetch(deliveryLog);
     await logChannel.send({ content: `📄 Transcript for ${interaction.channel.name}`, files: [file] });
 
     if (isDelivered) {
-      const openerId = interaction.channel.name.split('-').pop();
       const memberToUpdate = await interaction.guild.members.fetch(openerId).catch(() => null);
-      const selection = client.tempSelections?.[openerId];
-
       if (memberToUpdate) {
-        await memberToUpdate.roles.add('1357307449366937700');
+        await memberToUpdate.roles.add('1357307449366937700'); // Verified Buyer
       }
 
-      const summaryEmbed = new EmbedBuilder()
+      const exchangeLogEmbed = new EmbedBuilder()
         .setTitle('✅ Exchange Completed')
         .setColor('#a020f0')
         .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/F8A11032-91DF-4076-91D8-247F1AF998C9.png')
@@ -128,17 +122,15 @@ client.on('interactionCreate', async interaction => {
         )
         .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
 
-      const exchangeLogChannel = await interaction.guild.channels.fetch('1361748424277627215');
-      await exchangeLogChannel.send({ embeds: [summaryEmbed] });
+      const vouchChannel = await interaction.guild.channels.fetch('1361748424277627215');
+      await vouchChannel.send({ embeds: [exchangeLogEmbed] });
     }
 
     try {
-      await user.send('✅ **Thank you for using GrandX Exchange!**\nIf you have any feedback or need help, feel free to open a support ticket.');
-    } catch (e) {
-      console.log(`❌ Could not DM ${user.tag}`);
-    }
+      await interaction.user.send('✅ Thank you for using GrandX Exchange!');
+    } catch (e) {}
 
-    await interaction.reply({ content: '✅ Ticket closed. Transcript saved.', ephemeral: true });
+    await interaction.reply({ content: '✅ Ticket closed.', ephemeral: true });
     await interaction.channel.delete();
   }
 });

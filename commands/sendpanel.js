@@ -18,10 +18,10 @@ module.exports = {
         `> <:emoji_25:1370476212656537822> **$50–$150** = ₹87/$\n` +
         `> <:emoji_25:1370476212656537822> **Above $150** = ₹87.5/$\n\n` +
         `**__RULES & GUIDELINES__**\n` +
-        `> ✅ **Do not DM staff directly**\n` +
+        `> ❌ **Do not DM staff directly**\n` +
         `> ⚠️ **No negotiations or rate changes**\n` +
-        `> 🔐 **Only use tickets opened by this bot**\n` +
-        `> ✅ **Confirm payment before closing the ticket**`
+        `> 🔐 **Use only bot-created tickets**\n` +
+        `> ✅ **Confirm payment before closing**`
       )
       .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
 
@@ -33,12 +33,12 @@ module.exports = {
           {
             label: 'INR to Crypto',
             value: 'i2c',
-            emoji: '<:emoji_23:1370473294448558210>',
+            emoji: { id: '1370473294448558210', name: 'emoji_23' }
           },
           {
             label: 'Crypto to INR',
             value: 'c2i',
-            emoji: '<:emoji_25:1370476212656537822>',
+            emoji: { id: '1370476212656537822', name: 'emoji_25' }
           }
         ])
     );

@@ -76,7 +76,7 @@ const app = express();
 app.get('/', (req, res) => res.send('Bot is alive!'));
 app.listen(3000, () => console.log('✅ Keep-alive server running on port 3000'));
 
-// Handle all interactions
+// Handle interactions
 client.on('interactionCreate', async interaction => {
   if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);
@@ -108,15 +108,32 @@ client.on('interactionCreate', async interaction => {
     const isDelivered = interaction.customId === 'mark_delivered';
     const logChannelId = isDelivered ? '1370081787501613066' : '1357307691487334542';
     const logChannel = await interaction.guild.channels.fetch(logChannelId);
-
     await logChannel.send({ content: `📄 Transcript for ${interaction.channel.name}`, files: [file] });
 
     if (isDelivered) {
       const openerId = interaction.channel.name.split('-').pop();
       const memberToUpdate = await interaction.guild.members.fetch(openerId).catch(() => null);
+      const selection = client.tempSelections?.[openerId];
+
       if (memberToUpdate) {
         await memberToUpdate.roles.add('1357307449366937700'); // Verified Buyer role
       }
+
+      const summaryEmbed = new EmbedBuilder()
+        .setTitle('✅ Exchange Completed')
+        .setColor('#a020f0')
+        .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/F8A11032-91DF-4076-91D8-247F1AF998C9.png')
+        .setDescription(
+          `**• User:** <@${openerId}>\n` +
+          `**• Type:** ${selection?.type || 'N/A'}\n` +
+          `**• Selected:** ${selection?.value?.toUpperCase() || 'N/A'}\n` +
+          `**• Amount:** ${messages.find(m => m.content.includes('Amount:'))?.content.split('Amount:')[1].trim() || 'N/A'}\n` +
+          `**• Delivered By:** <@${interaction.user.id}>`
+        )
+        .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
+
+      const exchangeLogChannel = await interaction.guild.channels.fetch('1361748424277627215');
+      await exchangeLogChannel.send({ embeds: [summaryEmbed] });
     }
 
     try {

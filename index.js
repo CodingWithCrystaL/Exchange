@@ -23,6 +23,7 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
+// Register Slash Commands
 const registerCommands = async () => {
   const commands = client.commands.map(cmd => cmd.data.toJSON());
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -35,6 +36,7 @@ const registerCommands = async () => {
   }
 };
 
+// Bot Ready
 client.once('ready', () => {
   console.log(`✅ Bot is online as ${client.user.tag}`);
 
@@ -60,10 +62,12 @@ client.once('ready', () => {
 
 registerCommands();
 
+// Keep Alive
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive!'));
-app.listen(3000, () => console.log('✅ Keep-alive server running on port 3000'));
+app.listen(3000, () => console.log('✅ Keep-alive server running'));
 
+// Event Handler
 client.on('interactionCreate', async interaction => {
   if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);
@@ -92,17 +96,23 @@ client.on('interactionCreate', async interaction => {
       return interaction.reply({ content: '❌ You do not have permission.', ephemeral: true });
     }
 
+    // Get real user ID from ticket permissions
+    const openerId = interaction.channel.permissionOverwrites.cache
+      .find(po => po.allow.has('ViewChannel') && po.id !== interaction.guild.roles.everyone.id && po.id !== process.env.STAFF_ROLE_ID)?.id;
+
+    const selection = client.tempSelections?.[openerId];
+
+    // Save transcript
     const messages = await interaction.channel.messages.fetch({ limit: 100 });
     const log = messages.map(msg => `[${msg.author.tag}]: ${msg.content}`).reverse().join('\n');
     const buffer = Buffer.from(log, 'utf-8');
     const file = { attachment: buffer, name: `transcript-${interaction.channel.name}.txt` };
 
-    const openerId = interaction.channel.name.split('-').pop();
-    const selection = client.tempSelections?.[openerId];
     const deliveryLog = isDelivered ? '1370081787501613066' : '1357307691487334542';
     const logChannel = await interaction.guild.channels.fetch(deliveryLog);
     await logChannel.send({ content: `📄 Transcript for ${interaction.channel.name}`, files: [file] });
 
+    // Mark delivered: assign role + send exchange summary
     if (isDelivered) {
       const memberToUpdate = await interaction.guild.members.fetch(openerId).catch(() => null);
       if (memberToUpdate) {
@@ -116,7 +126,7 @@ client.on('interactionCreate', async interaction => {
         .setDescription(
           `**• User:** <@${openerId}>\n` +
           `**• Type:** ${selection?.type || 'N/A'}\n` +
-          `**• Selected:** ${selection?.value?.toUpperCase() || 'N/A'}\n` +
+          `**• Selected:** ${selection?.value || 'N/A'}\n` +
           `**• Amount:** ₹${selection?.amount || 'N/A'}\n` +
           `**• Delivered By:** <@${interaction.user.id}>`
         )
@@ -126,6 +136,7 @@ client.on('interactionCreate', async interaction => {
       await vouchChannel.send({ embeds: [exchangeLogEmbed] });
     }
 
+    // DM confirmation
     try {
       await interaction.user.send('✅ Thank you for using GrandX Exchange!');
     } catch (e) {}

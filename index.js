@@ -1,3 +1,4 @@
+// index.js
 const {
   Client,
   GatewayIntentBits,
@@ -7,8 +8,6 @@ const {
   PermissionsBitField,
   EmbedBuilder,
   ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
   REST,
   Routes
 } = require('discord.js');
@@ -32,7 +31,6 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-// Auto-register slash commands
 const registerCommands = async () => {
   const commands = client.commands.map(cmd => cmd.data.toJSON());
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -71,12 +69,10 @@ client.once('ready', () => {
 
 registerCommands();
 
-// Keep-alive server for Render
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive!'));
 app.listen(3000, () => console.log('✅ Keep-alive server running on port 3000'));
 
-// Handle interactions
 client.on('interactionCreate', async interaction => {
   if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);
@@ -116,7 +112,7 @@ client.on('interactionCreate', async interaction => {
       const selection = client.tempSelections?.[openerId];
 
       if (memberToUpdate) {
-        await memberToUpdate.roles.add('1357307449366937700'); // Verified Buyer role
+        await memberToUpdate.roles.add('1357307449366937700');
       }
 
       const summaryEmbed = new EmbedBuilder()
@@ -127,7 +123,7 @@ client.on('interactionCreate', async interaction => {
           `**• User:** <@${openerId}>\n` +
           `**• Type:** ${selection?.type || 'N/A'}\n` +
           `**• Selected:** ${selection?.value?.toUpperCase() || 'N/A'}\n` +
-          `**• Amount:** ${messages.find(m => m.content.includes('Amount:'))?.content.split('Amount:')[1].trim() || 'N/A'}\n` +
+          `**• Amount:** ₹${selection?.amount || 'N/A'}\n` +
           `**• Delivered By:** <@${interaction.user.id}>`
         )
         .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });

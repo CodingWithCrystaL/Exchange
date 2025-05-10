@@ -24,7 +24,7 @@ module.exports = {
       .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/F8A11032-91DF-4076-91D8-247F1AF998C9.png')
       .setDescription(
         `**__INR TO CRYPTO__**\n` +
-        `> <:emoji_23:1370473294448558210> **₹92 per $ (Any Amount)**\n\n` +
+        `> <:emoji_23:1370473294448558210> **₹91 per $ (Any Amount)**\n\n` +
         `**__CRYPTO TO INR__**\n` +
         `> <:emoji_25:1370476212656537822> **Below $50** = ₹86.5/$\n` +
         `> <:emoji_25:1370476212656537822> **$50–$150** = ₹87/$\n` +

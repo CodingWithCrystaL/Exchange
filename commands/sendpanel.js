@@ -1,4 +1,9 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  StringSelectMenuBuilder
+} = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -6,6 +11,13 @@ module.exports = {
     .setDescription('Send exchange panel for users to open tickets'),
 
   async execute(interaction) {
+    const staffRoleId = process.env.STAFF_ROLE_ID;
+    const member = await interaction.guild.members.fetch(interaction.user.id);
+
+    if (!member.roles.cache.has(staffRoleId)) {
+      return interaction.reply({ content: '❌ Only staff can use this command.', ephemeral: true });
+    }
+
     const embed = new EmbedBuilder()
       .setTitle('🛒 **GRANDX EXCHANGE PANEL** 🛒')
       .setColor('#e600f8')

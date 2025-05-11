@@ -26,7 +26,7 @@ module.exports = {
         `**__INR TO CRYPTO__**\n` +
         `> <:emoji_23:1370473294448558210> **Any Amount** = ₹90/$\n\n` +
         `**__CRYPTO TO INR__**\n` +
-        `> <:emoji_25:1370476212656537822> **Any Ammount** = ₹85/$\n` +
+        `> <:emoji_25:1370476212656537822> **Any Amount** = ₹85/$\n` +
         `**__RULES & GUIDELINES__**\n` +
         `> ❌ **Do not DM staff directly**\n` +
         `> ⚠️ **No negotiations or rate changes**\n` +

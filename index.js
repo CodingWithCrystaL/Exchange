@@ -23,7 +23,6 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-// Register Slash Commands
 const registerCommands = async () => {
   const commands = client.commands.map(cmd => cmd.data.toJSON());
   const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
@@ -36,18 +35,17 @@ const registerCommands = async () => {
   }
 };
 
-// Bot Ready
 client.once('ready', () => {
   console.log(`✅ Bot is online as ${client.user.tag}`);
 
   const statuses = [
-    '💸 Buying USDT at ₹92/$',
-    '📤 Sending Crypto Fast',
-    '📥 Receiving INR Securely',
-    '🔁 Real-Time Exchange',
-    '💳 Instant UPI Payments',
-    '🪙 BTC, ETH, LTC, USDT Live!',
-    '🎟️ Creating Exchange Tickets'
+    '💸 Dior Exchange Live Now',
+    '📤 INR to Crypto in seconds',
+    '📥 Crypto to INR with ease',
+    '🔁 Real-Time Exchange Support',
+    '💳 Instant UPI Handling',
+    '🪙 USDT, LTC, ETH, Polygon!',
+    '🎟️ Fast Exchange Tickets'
   ];
 
   let i = 0;
@@ -62,12 +60,10 @@ client.once('ready', () => {
 
 registerCommands();
 
-// Keep Alive
 const app = express();
 app.get('/', (req, res) => res.send('Bot is alive!'));
 app.listen(3000, () => console.log('✅ Keep-alive server running'));
 
-// Event Handler
 client.on('interactionCreate', async interaction => {
   if (interaction.isChatInputCommand()) {
     const command = client.commands.get(interaction.commandName);
@@ -96,13 +92,10 @@ client.on('interactionCreate', async interaction => {
       return interaction.reply({ content: '❌ You do not have permission.', ephemeral: true });
     }
 
-    // Get real user ID from ticket permissions
     const openerId = interaction.channel.permissionOverwrites.cache
       .find(po => po.allow.has('ViewChannel') && po.id !== interaction.guild.roles.everyone.id && po.id !== process.env.STAFF_ROLE_ID)?.id;
 
     const selection = client.tempSelections?.[openerId];
-
-    // Save transcript
     const messages = await interaction.channel.messages.fetch({ limit: 100 });
     const log = messages.map(msg => `[${msg.author.tag}]: ${msg.content}`).reverse().join('\n');
     const buffer = Buffer.from(log, 'utf-8');
@@ -112,7 +105,6 @@ client.on('interactionCreate', async interaction => {
     const logChannel = await interaction.guild.channels.fetch(deliveryLog);
     await logChannel.send({ content: `📄 Transcript for ${interaction.channel.name}`, files: [file] });
 
-    // Mark delivered: assign role + send exchange summary
     if (isDelivered) {
       const memberToUpdate = await interaction.guild.members.fetch(openerId).catch(() => null);
       if (memberToUpdate) {
@@ -121,8 +113,8 @@ client.on('interactionCreate', async interaction => {
 
       const exchangeLogEmbed = new EmbedBuilder()
         .setTitle('✅ Exchange Completed')
-        .setColor('#a020f0')
-        .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/F8A11032-91DF-4076-91D8-247F1AF998C9.png')
+        .setColor('White')
+        .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/97BF9134-C91D-442D-8F09-74FD08C3C379.png')
         .setDescription(
           `**• User:** <@${openerId}>\n` +
           `**• Type:** ${selection?.type || 'N/A'}\n` +
@@ -130,15 +122,14 @@ client.on('interactionCreate', async interaction => {
           `**• Amount:** ₹${selection?.amount || 'N/A'}\n` +
           `**• Delivered By:** <@${interaction.user.id}>`
         )
-        .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
+        .setFooter({ text: 'Dior Exchange | Powered by Kai' });
 
       const vouchChannel = await interaction.guild.channels.fetch('1361748424277627215');
       await vouchChannel.send({ embeds: [exchangeLogEmbed] });
     }
 
-    // DM confirmation
     try {
-      await interaction.user.send('✅ Thank you for using GrandX Exchange!');
+      await interaction.user.send('✅ Thank you for using Dior Exchange!');
     } catch (e) {}
 
     await interaction.reply({ content: '✅ Ticket closed.', ephemeral: true });

@@ -83,6 +83,23 @@ client.on('interactionCreate', async interaction => {
   }
 
   if (interaction.isButton()) {
+    // ✅ Handle Copy Button
+    if (interaction.customId.startsWith('copy_')) {
+      const key = interaction.customId.split('copy_')[1];
+      const addressMap = {
+        usdt_trc20: 'TCgaBsn5HnsZVTsrgd4smVyqdF7pDrYLok',
+        usdt_polygon: '0x1DC2Fdd9Cc33ce107505aA81f1cb4811949ECAAF',
+        ltc: 'ltc1qr354v0qe2mja3rq423g4x80m3lxwcf0vfp5mcv',
+        upi: 'payishant@fam'
+      };
+
+      const address = addressMap[key];
+      if (address) {
+        return interaction.reply({ content: address, ephemeral: true });
+      }
+    }
+
+    // ✅ Ticket Close / Mark Delivered
     const isDelivered = interaction.customId === 'mark_delivered';
     const isClose = interaction.customId === 'close_ticket';
 

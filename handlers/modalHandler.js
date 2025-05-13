@@ -43,8 +43,9 @@ module.exports = async (interaction, client) => {
 
   const embed = new EmbedBuilder()
     .setTitle('🎟️ Exchange Ticket Created')
-    .setColor('#a020f0')
-    .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/F8A11032-91DF-4076-91D8-247F1AF998C9.png')
+    .setColor('#ffffff')
+    .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/97BF9134-C91D-442D-8F09-74FD08C3C379.png')
+    .setImage('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/IMG_1574.jpeg')
     .setDescription(
       `**• User:** <@${userId}>\n` +
       `**• Type:** ${type}\n` +
@@ -54,7 +55,8 @@ module.exports = async (interaction, client) => {
       `> ❌ Do **not** DM anyone directly.\n` +
       `> ✅ Provide payment proof when asked.`
     )
-    .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
+    .setFooter({ text: 'Dior Exchange Bot' })
+    .setTimestamp();
 
   const row = new ActionRowBuilder().addComponents(
     new ButtonBuilder()

@@ -20,20 +20,21 @@ module.exports = {
 
     const embed = new EmbedBuilder()
       .setTitle('🛒 **GRANDX EXCHANGE PANEL** 🛒')
-      .setColor('#e600f8')
-      .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/F8A11032-91DF-4076-91D8-247F1AF998C9.png')
+      .setColor('#ffffff') // White color
+      .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/97BF9134-C91D-442D-8F09-74FD08C3C379.png')
       .setDescription(
         `**__INR TO CRYPTO__**\n` +
         `> <:emoji_23:1370473294448558210> **Any Amount** = ₹90/$\n\n` +
         `**__CRYPTO TO INR__**\n` +
-        `> <:emoji_25:1370476212656537822> **Any Amount** = ₹85/$\n` +
+        `> <:emoji_25:1370476212656537822> **Any Amount** = ₹85/$\n\n` +
         `**__RULES & GUIDELINES__**\n` +
         `> ❌ **Do not DM staff directly**\n` +
         `> ⚠️ **No negotiations or rate changes**\n` +
         `> 🔐 **Use only bot-created tickets**\n` +
         `> ✅ **Confirm payment before closing**`
       )
-      .setFooter({ text: 'GrandX Exchange Bot | Powered by Kai' });
+      .setImage('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/IMG_1574.jpeg')
+      .setFooter({ text: 'Dior Exchanges' });
 
     const row = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()

@@ -1,4 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle
+} = require('discord.js');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -32,6 +38,7 @@ module.exports = {
     };
 
     const selected = addressMap[type];
+
     const embed = new EmbedBuilder()
       .setTitle('💳 Payment Method')
       .setColor('#ffffff')
@@ -39,6 +46,13 @@ module.exports = {
       .setFooter({ text: 'Dior Exchange' })
       .setTimestamp();
 
-    await interaction.reply({ embeds: [embed] });
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`copy_${type}`)
+        .setLabel('📋 Copy Address')
+        .setStyle(ButtonStyle.Secondary)
+    );
+
+    await interaction.reply({ embeds: [embed], components: [row] });
   }
 };

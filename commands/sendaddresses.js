@@ -34,9 +34,10 @@ module.exports = {
     const selected = addressMap[type];
     const embed = new EmbedBuilder()
       .setTitle('💳 Payment Method')
-      .setColor('#a020f0')
+      .setColor('#ffffff')
       .setDescription(`**${selected.label}**\n\`${selected.value}\``)
-      .setFooter({ text: 'GrandX Exchange | Powered by Kai' });
+      .setFooter({ text: 'Dior Exchange' })
+      .setTimestamp();
 
     await interaction.reply({ embeds: [embed] });
   }

@@ -19,7 +19,7 @@ module.exports = {
     }
 
     const embed = new EmbedBuilder()
-      .setTitle('🛒 **GRANDX EXCHANGE PANEL** 🛒')
+      .setTitle('❕ **DIOR EXCHANGE PANEL** ❕')
       .setColor('#ffffff') // White color
       .setThumbnail('https://raw.githubusercontent.com/CodingWithCrystaL/Exchange/refs/heads/main/97BF9134-C91D-442D-8F09-74FD08C3C379.png')
       .setDescription(
